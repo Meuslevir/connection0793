@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Terminal Contact</title>
+  <title>Connection 0793.4</title>
   <style>
     html, body {
       height: 100%;
@@ -187,7 +187,7 @@
       { triggers: [/can\s*(you|u)\s*hear\s*me/i], response: "Unfortunately." },
       { triggers: [/should\s*i\s*stop\s*talking/i], response: "You will. They all do." },
       { triggers: [/((can|how)\s*(i\s*)?help\s*(you|u))/i], response: "You can forget me. That’s the closest thing to mercy." },
-      { triggers: [/^(hi|hello|hey)$/i], response: "...You're still here?" }
+      { triggers: [/^(hi|hello|hey)$/i], response: "What do you want" }
     ];
 
     function handleInput() {
@@ -214,7 +214,7 @@
         }
 
         if (!matched) {
-          appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>…No response.</em></span>`);
+          appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>...</em></span>`);
         }
 
         inputField.disabled = false;
