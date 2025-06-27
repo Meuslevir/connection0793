@@ -17,7 +17,7 @@
     #chat-wrapper {
       position: absolute;
       top: 0;
-      bottom: 50px;
+      bottom: 50px; /* height of input field */
       left: 0;
       right: 0;
       overflow-y: auto;
@@ -109,11 +109,18 @@
   <div id="chat-wrapper">
     <div id="chat"></div>
   </div>
-  <button id="scrollBtn" onclick="scrollToBottom()">v</button>
+  <button id="scrollBtn" onclick="scrollToBottom()">▼</button>
   <form id="inputForm" onsubmit="return handleInput();">
     <div class="input-container">
       <span class="input-label">&gt;</span>
-      <input type="text" id="userInput" autocomplete="off" autofocus />
+      <input
+        type="text"
+        id="userInput"
+        autocomplete="off"
+        autofocus
+        inputmode="text"
+        enterkeyhint="send"
+      />
     </div>
   </form>
 
@@ -179,7 +186,8 @@
       { triggers: [/(what's\s*coming|are\s*we\s*safe)/i], response: "You’re late. It already came. You're what's left." },
       { triggers: [/can\s*(you|u)\s*hear\s*me/i], response: "Unfortunately." },
       { triggers: [/should\s*i\s*stop\s*talking/i], response: "You will. They all do." },
-      { triggers: [/((can|how)\s*(i\s*)?help\s*(you|u))/i], response: "You can forget me. That’s the closest thing to mercy." }
+      { triggers: [/((can|how)\s*(i\s*)?help\s*(you|u))/i], response: "You can forget me. That’s the closest thing to mercy." },
+      { triggers: [/^(hi|hello|hey)$/i], response: "...You're still here?" }
     ];
 
     function handleInput() {
@@ -206,11 +214,12 @@
         }
 
         if (!matched) {
-          appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>No response.</em></span>`);
+          appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>…No response.</em></span>`);
         }
 
         inputField.disabled = false;
-        inputField.focus();
+        inputField.blur();
+        setTimeout(() => inputField.focus(), 50);
       }, 1000);
 
       return false;
