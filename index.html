@@ -13,12 +13,16 @@
       font-family: monospace;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
     #chat {
       flex: 1;
       overflow-y: auto;
       padding: 20px;
       white-space: pre-wrap;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
     }
     form {
       background-color: black;
@@ -73,14 +77,20 @@
     const chat = document.getElementById("chat");
     const inputField = document.getElementById("userInput");
 
+    function appendMessage(html) {
+      const span = document.createElement("span");
+      span.innerHTML = html;
+      chat.appendChild(span);
+      chat.appendChild(document.createElement("br"));
+      chat.scrollTop = chat.scrollHeight;
+    }
+
     // Initial host message after 1 second
     setTimeout(() => {
-      chat.innerHTML += `<span><span class="host-label">[HOST &lt;]</span> <span class="host-response">Hello?</span></span><br />`;
-      chat.scrollTop = chat.scrollHeight;
+      appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response">Hello?</span>`);
     }, 1000);
 
     const prompts = [
-      { triggers: [/^(hi|hello|hey)[!.]?$/i, /^(hi|hello|hey)[,\s]+.*$/i], response: "You're here now. That’s enough." },
       { triggers: [/who\s*are\s*(you|u)/i], response: "A name won’t help you. It peeled off long before the silence set in." },
       { triggers: [/are\s*(you|u)\s*(alive|dead)/i], response: "I'm not sure the difference means anything down here." },
       { triggers: [/what\s*are\s*(you|u)/i], response: "A thought caught in amber. A breath that forgot how to stop." },
@@ -112,7 +122,7 @@
 
       if (!inputText) return false;
 
-      chat.innerHTML += `<span><span class="host-label">[YOU &gt;]</span> <span class="user">${inputTextRaw}</span></span><br>`;
+      appendMessage(`<span class="host-label">[YOU &gt;]</span> <span class="user">${inputTextRaw}</span>`);
       inputField.value = '';
       inputField.disabled = true;
 
@@ -121,7 +131,7 @@
         for (const prompt of prompts) {
           for (const regex of prompt.triggers) {
             if (regex.test(inputText)) {
-              chat.innerHTML += `<span><span class="host-label">[HOST &lt;]</span> <span class="host-response">${prompt.response}</span></span><br>`;
+              appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response">${prompt.response}</span>`);
               matched = true;
               break;
             }
@@ -130,15 +140,13 @@
         }
 
         if (!matched) {
-          chat.innerHTML += `<span><span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>…No response.</em></span></span><br>`;
+          appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>No response.</em></span>`);
         }
 
         inputField.disabled = false;
         inputField.focus();
-        chat.scrollTop = chat.scrollHeight;
       }, 1000);
 
-      chat.scrollTop = chat.scrollHeight;
       return false;
     }
   </script>
