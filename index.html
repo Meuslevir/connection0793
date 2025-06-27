@@ -36,6 +36,10 @@
       color: white; /* white text for host replies */
       user-select: text;
     }
+    .host-response em {
+      font-style: italic;
+      color: gray; /* gray italic for no response */
+    }
   </style>
 </head>
 <body>
@@ -53,7 +57,7 @@
     const chat = document.getElementById("chat");
     const inputField = document.getElementById("userInput");
 
-    // Initial host message after 2 seconds
+    // Initial host message after 1 second
     setTimeout(() => {
       chat.innerHTML += `<span><span class="host-label">[HOST &lt;]</span> <span class="host-response">Hello?</span></span><br />`;
       window.scrollTo(0, document.body.scrollHeight);
@@ -83,9 +87,9 @@
         } else if (/origin/.test(inputText)) {
           response = "The origin is not a place. It's a wound.";
         } else if (/^(hi|hello)$/.test(inputText) || /how are you/.test(inputText)) {
-          response = "What do you want";
+          response = "What do you want.";
         } else {
-          response = "<em>No response.</em>";
+          response = "<em>…No response.</em>";
         }
 
         // Show host reply
