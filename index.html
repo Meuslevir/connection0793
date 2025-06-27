@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terminal Contact</title>
+  <style>
+    body {
+      background-color: black;
+      color: gray;
+      font-family: monospace;
+      padding: 20px;
+      white-space: pre-wrap;
+    }
+    #chat {
+      margin-bottom: 1em;
+    }
+    input {
+      background-color: black;
+      color: gray;
+      border: none;
+      border-bottom: 1px solid gray;
+      font-family: monospace;
+      font-size: 1em;
+      width: 100%;
+      outline: none;
+    }
+    .user {
+      color: gray;
+    }
+    .host-label {
+      color: gray;
+      user-select: none;
+    }
+    .host-response {
+      color: white;
+      user-select: text;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat">
+    <span><span class="host-label">[HOST &lt;]</span> <span class="host-response">Hello?</span></span><br />
+  </div>
+
+  <form id="inputForm" onsubmit="return handleInput();">
+    <label>
+      &gt; <input type="text" id="userInput" autocomplete="off" autofocus />
+    </label>
+  </form>
+
+  <script>
+    function handleInput() {
+      const inputField = document.getElementById("userInput");
+      const inputText = inputField.value.trim().toLowerCase();
+      const chat = document.getElementById("chat");
+
+      if (!inputText) return false;
+
+      // Show user input immediately
+      chat.innerHTML += `<span class="user">[YOU &gt;] ${inputField.value}</span><br>`;
+
+      inputField.value = '';
+      inputField.disabled = true;
+
+      // Delay 2 seconds, then show host reply
+      setTimeout(() => {
+        let response = '';
+
+        if (/who\s+are\s+you/.test(inputText)) {
+          response = "I don't know. I don't want to know anymore.";
+        } else if (/past/.test(inputText)) {
+          response = "The past is sealed. We don't go back. You shouldn't either.";
+        } else if (/eye/.test(inputText)) {
+          response = "It sees more clearly than we ever could.";
+        } else if (/origin/.test(inputText)) {
+          response = "The origin is not a place. It's a wound.";
+        } else if (/^(hi|hello)$/.test(inputText) || /how are you/.test(inputText)) {
+          response = "What do you want.";
+        } else {
+          response = "…No response.";
+        }
+
+        // Show host reply
+        chat.innerHTML += `<span><span class="host-label">[HOST &lt;]</span> <span class="host-response">${response}</span></span><br>`;
+
+        inputField.disabled = false;
+        inputField.focus();
+        window.scrollTo(0, document.body.scrollHeight);
+      }, 2000);
+
+      window.scrollTo(0, document.body.scrollHeight);
+      return false;
+    }
+  </script>
+</body>
+</html>
