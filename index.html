@@ -12,22 +12,27 @@
       background-color: black;
       color: gray;
       font-family: monospace;
-      display: flex;
-      flex-direction: column;
       overflow: hidden;
     }
-    #chat {
-      flex: 1;
+    #chat-wrapper {
+      position: absolute;
+      top: 0;
+      bottom: 50px;
+      left: 0;
+      right: 0;
       overflow-y: auto;
       overflow-x: hidden;
       padding: 20px;
-      white-space: pre-wrap;
+      box-sizing: border-box;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      box-sizing: border-box;
+    }
+    #chat {
+      white-space: pre-wrap;
+      display: flex;
+      flex-direction: column;
       width: 100%;
-      max-width: 100vw;
     }
     form {
       background-color: black;
@@ -38,6 +43,10 @@
       bottom: 0;
       left: 0;
       box-sizing: border-box;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      z-index: 2;
     }
     .input-container {
       display: flex;
@@ -60,7 +69,6 @@
       outline: none;
       min-width: 0;
     }
-    /* Prevent zoom on input focus in mobile */
     @media screen and (max-width: 600px) {
       input {
         font-size: 16px;
@@ -81,10 +89,27 @@
       font-style: italic;
       color: gray;
     }
+    #scrollBtn {
+      display: none;
+      position: fixed;
+      bottom: 60px;
+      right: 20px;
+      background-color: #222;
+      color: gray;
+      border: 1px solid gray;
+      padding: 5px 10px;
+      font-family: monospace;
+      font-size: 0.8em;
+      cursor: pointer;
+      z-index: 2;
+    }
   </style>
 </head>
 <body>
-  <div id="chat"></div>
+  <div id="chat-wrapper">
+    <div id="chat"></div>
+  </div>
+  <button id="scrollBtn" onclick="scrollToBottom()">v</button>
   <form id="inputForm" onsubmit="return handleInput();">
     <div class="input-container">
       <span class="input-label">&gt;</span>
@@ -93,18 +118,40 @@
   </form>
 
   <script>
+    const chatWrapper = document.getElementById("chat-wrapper");
     const chat = document.getElementById("chat");
     const inputField = document.getElementById("userInput");
+    const scrollBtn = document.getElementById("scrollBtn");
 
     function appendMessage(html) {
       const span = document.createElement("span");
       span.innerHTML = html;
       chat.appendChild(span);
       chat.appendChild(document.createElement("br"));
-      chat.scrollTop = chat.scrollHeight;
+      if (isScrolledToBottom()) {
+        chatWrapper.scrollTop = chatWrapper.scrollHeight;
+      } else {
+        scrollBtn.style.display = "block";
+      }
     }
 
-    // Initial host message after 1 second
+    function isScrolledToBottom() {
+      return chatWrapper.scrollHeight - chatWrapper.clientHeight - chatWrapper.scrollTop < 10;
+    }
+
+    function scrollToBottom() {
+      chatWrapper.scrollTop = chatWrapper.scrollHeight;
+      scrollBtn.style.display = "none";
+    }
+
+    chatWrapper.addEventListener('scroll', () => {
+      if (isScrolledToBottom()) {
+        scrollBtn.style.display = "none";
+      } else {
+        scrollBtn.style.display = "block";
+      }
+    });
+
     setTimeout(() => {
       appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response">Hello?</span>`);
     }, 1000);
@@ -159,7 +206,7 @@
         }
 
         if (!matched) {
-          appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>…No response.</em></span>`);
+          appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>No response.</em></span>`);
         }
 
         inputField.disabled = false;
