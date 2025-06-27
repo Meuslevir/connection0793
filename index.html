@@ -17,7 +17,7 @@
     }
     input {
       background-color: black;
-      color: #cccccc; /* user input text color */
+      color: #cccccc;
       border: none;
       border-bottom: 1px solid gray;
       font-family: monospace;
@@ -26,27 +26,24 @@
       outline: none;
     }
     .user {
-      color: #cccccc; /* user typed text color in feed */
+      color: #cccccc;
     }
     .host-label {
-      color: gray; /* gray label for both host and user */
+      color: gray;
       user-select: none;
     }
     .host-response {
-      color: white; /* white text for host replies */
+      color: white;
       user-select: text;
     }
     .host-response em {
       font-style: italic;
-      color: gray; /* gray italic for no response */
+      color: gray;
     }
   </style>
 </head>
 <body>
-  <div id="chat">
-    <!-- initial message will be added by script -->
-  </div>
-
+  <div id="chat"></div>
   <form id="inputForm" onsubmit="return handleInput();">
     <label>
       &gt; <input type="text" id="userInput" autocomplete="off" autofocus />
@@ -63,37 +60,58 @@
       window.scrollTo(0, document.body.scrollHeight);
     }, 1000);
 
+    const prompts = [
+      { triggers: [/who\s+are\s+(you|u)/i], response: "A name won’t help you. It peeled off long before the silence set in." },
+      { triggers: [/are\s+(you|u)\s+(alive|dead)/i], response: "I'm not sure the difference means anything down here." },
+      { triggers: [/what\s+are\s+(you|u)/i], response: "A thought caught in amber. A breath that forgot how to stop." },
+      { triggers: [/do\s+(you|u)\s+know\s+who\s+(you|u)\s+are/i], response: "I was someone once. The memory's quiet now. It doesn't want to be known." },
+      { triggers: [/where\s+(are\s+(you|u)|am\s+i)/i], response: "Beneath. Far beneath. I hear stone shift like teeth grinding." },
+      { triggers: [/(what\s+do\s+(you|u)\s+see|can\s+(you|u)\s+see)/i], response: "There’s no seeing here. Only knowing. And forgetting what you know." },
+      { triggers: [/how\s+long\s+(have\s+(you|u)\s+been\s+(there|here)|has\s+it\s+been)/i], response: "Before you. Before language. Before teeth had names." },
+      { triggers: [/(what\s+(is|are)\s+(this|that|it|holding\s+you|you\s+in|the\s+liquid))/i], response: "It holds. It feeds. It remembers more than it should." },
+      { triggers: [/(can|why\s+can't)\s+(you|u)\s+(get\s+out|leave|escape)/i], response: "Outside is forgetting. Inside is memory sharpened to a point." },
+      { triggers: [/(does\s+it\s+hurt|are\s+(you|u)\s+in\s+pain)/i], response: "It doesn't hurt. Not the way you're thinking. It erodes." },
+      { triggers: [/(do\s+(you|u)\s+remember|what\s+do\s+(you|u)\s+remember)/i], response: "Not events. Not names. Just pressure. Heat. And the wrong kind of light." },
+      { triggers: [/do\s+(you|u)\s+dream/i], response: "Not dreams. Echoes. Rotting thoughts wearing old masks." },
+      { triggers: [/(what\s+(were|was)\s+(you|u)|what\s+did\s+(you|u)\s+used\s+to\s+be)/i], response: "A skin. A voice. A father maybe. It's distant. Like another person's fall." },
+      { triggers: [/((can|do)\s+(you|u)\s+think|are\s+(you|u)\s+conscious)/i], response: "I think too much. That’s the trap. It loops until the walls sweat." },
+      { triggers: [/do\s+(you|u)\s+know\s+who\s+(put|put\s+you)\s+here/i], response: "They wear your face. Speak your language. But they’re hollow in the middle." },
+      { triggers: [/(are\s+(there\s+others|you\s+alone))/i], response: "Not alone. But alone in the way a scream echoes back different." },
+      { triggers: [/what\s+are\s+(they|they\s+doing)\s+(to\s+you)?/i], response: "Pulling apart my thoughts like wet thread. Looking for patterns in static." },
+      { triggers: [/what\s+is\s+(this|this\s+place)/i], response: "Earth. Older than the word. Older than the shape of thought." },
+      { triggers: [/what\s+happened\s+before|before\s+humans/i], response: "They came up from under thought. Not beasts. Not gods. Not dead." },
+      { triggers: [/(what's\s+coming|are\s+we\s+safe)/i], response: "You’re late. It already came. You're what's left." },
+      { triggers: [/can\s+(you|u)\s+hear\s+me/i], response: "Unfortunately." },
+      { triggers: [/should\s+i\s+stop\s+talking/i], response: "You will. They all do." },
+      { triggers: [/((can|how)\s+(i\s+)?help\s+(you|u))/i], response: "You can forget me. That’s the closest thing to mercy." }
+    ];
+
     function handleInput() {
-      const inputText = inputField.value.trim().toLowerCase();
+      const inputTextRaw = inputField.value.trim();
+      const inputText = inputTextRaw.toLowerCase();
 
       if (!inputText) return false;
 
-      // Show user input immediately with separate label and text spans
-      chat.innerHTML += `<span><span class="host-label">[YOU &gt;]</span> <span class="user">${inputField.value}</span></span><br>`;
-
+      chat.innerHTML += `<span><span class="host-label">[YOU &gt;]</span> <span class="user">${inputTextRaw}</span></span><br>`;
       inputField.value = '';
       inputField.disabled = true;
 
-      // Delay 1 second for host reply now
       setTimeout(() => {
-        let response = '';
-
-        if (/who\s+are\s+you/.test(inputText)) {
-          response = "I don't know. I don't want to know anymore.";
-        } else if (/past/.test(inputText)) {
-          response = "The past is sealed. We don't go back. You shouldn't either.";
-        } else if (/eye/.test(inputText)) {
-          response = "It sees more clearly than we ever could.";
-        } else if (/origin/.test(inputText)) {
-          response = "The origin is not a place. It's a wound.";
-        } else if (/^(hi|hello)$/.test(inputText) || /how are you/.test(inputText)) {
-          response = "What do you want.";
-        } else {
-          response = "<em>No response.</em>";
+        let matched = false;
+        for (const prompt of prompts) {
+          for (const regex of prompt.triggers) {
+            if (regex.test(inputText)) {
+              chat.innerHTML += `<span><span class="host-label">[HOST &lt;]</span> <span class="host-response">${prompt.response}</span></span><br>`;
+              matched = true;
+              break;
+            }
+          }
+          if (matched) break;
         }
 
-        // Show host reply
-        chat.innerHTML += `<span><span class="host-label">[HOST &lt;]</span> <span class="host-response">${response}</span></span><br>`;
+        if (!matched) {
+          chat.innerHTML += `<span><span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>…No response.</em></span></span><br>`;
+        }
 
         inputField.disabled = false;
         inputField.focus();
@@ -106,3 +124,4 @@
   </script>
 </body>
 </html>
+
