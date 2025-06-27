@@ -21,7 +21,6 @@
       overflow-y: auto;
       overflow-x: hidden;
       padding: 20px;
-      padding-bottom: 60px; /* Prevent chat being hidden behind input */
       white-space: pre-wrap;
       display: flex;
       flex-direction: column;
@@ -39,9 +38,6 @@
       bottom: 0;
       left: 0;
       box-sizing: border-box;
-      height: 40px; /* Approximate height of input container */
-      display: flex;
-      align-items: center;
     }
     .input-container {
       display: flex;
@@ -63,6 +59,12 @@
       flex: 1;
       outline: none;
       min-width: 0;
+    }
+    /* Prevent zoom on input focus in mobile */
+    @media screen and (max-width: 600px) {
+      input {
+        font-size: 16px;
+      }
     }
     .user {
       color: #cccccc;
@@ -157,7 +159,7 @@
         }
 
         if (!matched) {
-          appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>No response.</em></span>`);
+          appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>…No response.</em></span>`);
         }
 
         inputField.disabled = false;
@@ -169,4 +171,3 @@
   </script>
 </body>
 </html>
-
