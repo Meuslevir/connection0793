@@ -40,7 +40,7 @@
 </head>
 <body>
   <div id="chat">
-    <span><span class="host-label">[HOST &lt;]</span> <span class="host-response">Hello?</span></span><br />
+    <!-- initial message will be added by script -->
   </div>
 
   <form id="inputForm" onsubmit="return handleInput();">
@@ -50,10 +50,17 @@
   </form>
 
   <script>
+    const chat = document.getElementById("chat");
+    const inputField = document.getElementById("userInput");
+
+    // Initial host message after 2 seconds
+    setTimeout(() => {
+      chat.innerHTML += `<span><span class="host-label">[HOST &lt;]</span> <span class="host-response">Hello?</span></span><br />`;
+      window.scrollTo(0, document.body.scrollHeight);
+    }, 2000);
+
     function handleInput() {
-      const inputField = document.getElementById("userInput");
       const inputText = inputField.value.trim().toLowerCase();
-      const chat = document.getElementById("chat");
 
       if (!inputText) return false;
 
@@ -63,7 +70,7 @@
       inputField.value = '';
       inputField.disabled = true;
 
-      // Delay 2 seconds, then show host reply
+      // Delay 1 second for host reply now
       setTimeout(() => {
         let response = '';
 
@@ -87,7 +94,7 @@
         inputField.disabled = false;
         inputField.focus();
         window.scrollTo(0, document.body.scrollHeight);
-      }, 2000);
+      }, 1000);
 
       window.scrollTo(0, document.body.scrollHeight);
       return false;
