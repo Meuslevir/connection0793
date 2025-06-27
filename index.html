@@ -5,15 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Terminal Contact</title>
   <style>
-    body {
+    html, body {
+      height: 100%;
+      margin: 0;
       background-color: black;
       color: gray;
       font-family: monospace;
+      display: flex;
+      flex-direction: column;
+    }
+    #chat {
+      flex: 1;
+      overflow-y: auto;
       padding: 20px;
       white-space: pre-wrap;
     }
-    #chat {
-      margin-bottom: 1em;
+    form {
+      background-color: black;
+      padding: 10px 20px;
+      border-top: 1px solid gray;
     }
     .input-container {
       display: flex;
@@ -66,7 +76,7 @@
     // Initial host message after 1 second
     setTimeout(() => {
       chat.innerHTML += `<span><span class="host-label">[HOST &lt;]</span> <span class="host-response">Hello?</span></span><br />`;
-      window.scrollTo(0, document.body.scrollHeight);
+      chat.scrollTop = chat.scrollHeight;
     }, 1000);
 
     const prompts = [
@@ -125,10 +135,10 @@
 
         inputField.disabled = false;
         inputField.focus();
-        window.scrollTo(0, document.body.scrollHeight);
+        chat.scrollTop = chat.scrollHeight;
       }, 1000);
 
-      window.scrollTo(0, document.body.scrollHeight);
+      chat.scrollTop = chat.scrollHeight;
       return false;
     }
   </script>
