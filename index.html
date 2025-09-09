@@ -1,228 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Connection 0793.4</title>
+  <meta charset="UTF-8">
+  <title>Monoterra Archive</title>
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background-color: black;
-      color: gray;
+    body {
+      background: #0b0b0b;
+      color: #e2e2e2;
       font-family: monospace;
-      overflow: hidden;
-    }
-    #chat-wrapper {
-      position: absolute;
-      top: 0;
-      bottom: 50px; /* height of input field */
-      left: 0;
-      right: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 20px;
-      box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
-    #chat {
-      white-space: pre-wrap;
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .logo h1 {
+      font-family: Impact, Charcoal, sans-serif;
+      font-size: 3rem;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .logo h2 {
+      font-size: 0.8rem;
+      letter-spacing: 1rem;
+      margin: 0.2rem 0 0 0;
+    }
+    .box {
       display: flex;
       flex-direction: column;
-      width: 100%;
-    }
-    form {
-      background-color: black;
-      padding: 10px 20px;
-      border-top: 1px solid gray;
-      width: 100%;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      box-sizing: border-box;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      z-index: 2;
-    }
-    .input-container {
-      display: flex;
-      align-items: center;
-      width: 100%;
-    }
-    .input-label {
-      color: gray;
-      margin-right: 0.5em;
-      white-space: nowrap;
+      gap: 0.5rem;
+      width: 220px;
     }
     input {
-      background-color: black;
-      color: #cccccc;
-      border: none;
-      border-bottom: 1px solid gray;
-      font-family: monospace;
-      font-size: 1em;
-      flex: 1;
+      background: #111;
+      border: 1px solid #444;
+      padding: 0.4rem;
+      color: #e2e2e2;
+      font-family: inherit;
+      font-size: 0.9rem;
       outline: none;
-      min-width: 0;
     }
-    @media screen and (max-width: 600px) {
-      input {
-        font-size: 16px;
-      }
+    input:focus {
+      border-color: #08f;
     }
-    .user {
-      color: #cccccc;
-    }
-    .host-label {
-      color: gray;
-      user-select: none;
-    }
-    .host-response {
-      color: white;
-      user-select: text;
-    }
-    .host-response em {
-      font-style: italic;
-      color: gray;
-    }
-    #scrollBtn {
+    .error {
+      color: #ff4c4c;
+      font-size: 0.8rem;
+      margin-top: 0.4rem;
       display: none;
-      position: fixed;
-      bottom: 60px;
-      right: 20px;
-      background-color: #222;
-      color: gray;
-      border: 1px solid gray;
-      padding: 5px 10px;
-      font-family: monospace;
-      font-size: 0.8em;
+      text-align: center;
+    }
+    .forgot {
+      margin-top: 0.6rem;
+      font-size: 0.75rem;
+      text-align: right;
+    }
+    .forgot a {
+      color: #08f;
+      text-decoration: none;
       cursor: pointer;
-      z-index: 2;
+    }
+    .forgot a:hover {
+      text-decoration: underline;
+    }
+    /* subtle shake */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      50% { transform: translateX(3px); }
+      75% { transform: translateX(-3px); }
+      100% { transform: translateX(0); }
+    }
+    .shake {
+      animation: shake 0.25s;
+    }
+    .hidden {
+      display: none;
+    }
+    .note {
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+      color: #aaa;
+      text-align: center;
+    }
+    .guest {
+      margin-top: 0.6rem;
+      font-size: 0.8rem;
+      color: #08f;
+      text-align: center;
+      cursor: pointer;
+      display: none;
+    }
+    .guest:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div id="chat-wrapper">
-    <div id="chat"></div>
+  <div class="logo">
+    <h1>MONOTERRA</h1>
+    <h2>ARCHIVE</h2>
   </div>
-  <button id="scrollBtn" onclick="scrollToBottom()">▼</button>
-  <form id="inputForm" onsubmit="return handleInput();">
-    <div class="input-container">
-      <span class="input-label">&gt;</span>
-      <input
-        type="text"
-        id="userInput"
-        autocomplete="off"
-        autofocus
-        inputmode="text"
-        enterkeyhint="send"
-      />
-    </div>
-  </form>
+
+  <!-- LOGIN VIEW -->
+  <div class="box" id="login-view">
+    <input type="text" id="user" placeholder="Username">
+    <input type="password" id="pass" placeholder="Password">
+    <div class="error" id="login-error"></div>
+    <div class="forgot"><a id="forgot-link">Forgot password?</a></div>
+  </div>
+
+  <!-- FORGOT PASSWORD VIEW -->
+  <div class="box hidden" id="forgot-view">
+    <input type="email" id="email" placeholder="Enter your email address">
+    <div class="error" id="email-error"></div>
+    <div class="guest" id="guest-option">Login as Guest?</div>
+    <div class="forgot"><a id="back-link">← Back to login</a></div>
+  </div>
 
   <script>
-    const chatWrapper = document.getElementById("chat-wrapper");
-    const chat = document.getElementById("chat");
-    const inputField = document.getElementById("userInput");
-    const scrollBtn = document.getElementById("scrollBtn");
+    const loginView = document.getElementById("login-view");
+    const forgotView = document.getElementById("forgot-view");
+    const loginError = document.getElementById("login-error");
+    const emailError = document.getElementById("email-error");
+    const guestOption = document.getElementById("guest-option");
 
-    function appendMessage(html) {
-      const span = document.createElement("span");
-      span.innerHTML = html;
-      chat.appendChild(span);
-      chat.appendChild(document.createElement("br"));
-      if (isScrolledToBottom()) {
-        chatWrapper.scrollTop = chatWrapper.scrollHeight;
-      } else {
-        scrollBtn.style.display = "block";
-      }
-    }
+    const userInput = document.getElementById("user");
+    const passInput = document.getElementById("pass");
+    const emailInput = document.getElementById("email");
 
-    function isScrolledToBottom() {
-      return chatWrapper.scrollHeight - chatWrapper.clientHeight - chatWrapper.scrollTop < 10;
-    }
+    const forgotLink = document.getElementById("forgot-link");
+    const backLink = document.getElementById("back-link");
 
-    function scrollToBottom() {
-      chatWrapper.scrollTop = chatWrapper.scrollHeight;
-      scrollBtn.style.display = "none";
-    }
+    // LOGIN logic
+    [userInput, passInput].forEach(input => {
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (!userInput.value.trim()) {
+            showError(loginError, loginView, "NO USERNAME ENTERED");
+          } else if (!passInput.value.trim()) {
+            showError(loginError, loginView, "NO PASSWORD ENTERED");
+          } else {
+            showError(loginError, loginView, "ACCESS DENIED");
+          }
+        }
+      });
+    });
 
-    chatWrapper.addEventListener('scroll', () => {
-      if (isScrolledToBottom()) {
-        scrollBtn.style.display = "none";
-      } else {
-        scrollBtn.style.display = "block";
+    // FORGOT PASSWORD logic
+    emailInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        showError(emailError, forgotView, "NO EMAIL FOUND IN SYSTEM");
+        guestOption.style.display = "block";
       }
     });
 
-    setTimeout(() => {
-      appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response">Hello?</span>`);
-    }, 1000);
+    // Guest link redirects to Google
+    guestOption.addEventListener("click", () => {
+      window.location.href = "https://www.google.com";
+    });
 
-    const prompts = [
-      { triggers: [/who\s*are\s*(you|u)/i], response: "A name won’t help you. It peeled off long before the silence set in." },
-      { triggers: [/are\s*(you|u)\s*(alive|dead)/i], response: "I'm not sure the difference means anything down here." },
-      { triggers: [/what\s*are\s*(you|u)/i], response: "A thought caught in amber. A breath that forgot how to stop." },
-      { triggers: [/do\s*(you|u)\s*know\s*who\s*(you|u)\s*are/i], response: "I was someone once. The memory's quiet now. It doesn't want to be known." },
-      { triggers: [/where\s*(are\s*(you|u)|am\s*i)/i], response: "Beneath. Far beneath. I hear stone shift like teeth grinding." },
-      { triggers: [/(what\s*do\s*(you|u)\s*see|can\s*(you|u)\s*see)/i], response: "There’s no seeing here. Only knowing. And forgetting what you know." },
-      { triggers: [/how\s*long\s*(have\s*(you|u)\s*been\s*(there|here)|has\s*it\s*been)/i], response: "Before you. Before language. Before teeth had names." },
-      { triggers: [/(what\s*(is|are)\s*(this|that|it|holding\s*you|you\s*in|the\s*liquid|substance))/i], response: "It holds. It feeds. It remembers more than it should." },
-      { triggers: [/(can|why\s*can't|did)\s*(you|u)\s*(get\s*out|leave|escape|move|walk|go)/i, /are\s*(you|u)\s*(trapped|stuck)/i], response: "Outside is forgetting. Inside is memory sharpened to a point." },
-      { triggers: [/(does\s*it\s*hurt|are\s*(you|u)\s*in\s*pain|hurt\??)/i], response: "It doesn't hurt. Not the way you're thinking. It erodes." },
-      { triggers: [/(do\s*(you|u)\s*remember|what\s*do\s*(you|u)\s*remember)/i], response: "Not events. Not names. Just pressure. Heat. And the wrong kind of light." },
-      { triggers: [/do\s*(you|u)\s*dream/i], response: "Not dreams. Echoes. Rotting thoughts wearing old masks." },
-      { triggers: [/(what\s*(were|was)\s*(you|u)|what\s*did\s*(you|u)\s*used\s*to\s*be)/i], response: "A skin. A voice. A father maybe. It's distant. Like another person's fall." },
-      { triggers: [/((can|do)\s*(you|u)\s*think|are\s*(you|u)\s*conscious)/i], response: "I think too much. That’s the trap. It loops until the walls sweat." },
-      { triggers: [/do\s*(you|u)\s*know\s*who\s*(put|put\s*you)\s*here/i], response: "They wear your face. Speak your language. But they’re hollow in the middle." },
-      { triggers: [/(are\s*(there\s*others|you\s*alone))/i], response: "Not alone. But alone in the way a scream echoes back different." },
-      { triggers: [/what\s*are\s*(they|they\s*doing)\s*(to\s*you)?/i], response: "Pulling apart my thoughts like wet thread. Looking for patterns in static." },
-      { triggers: [/what\s*is\s*(this|this\s*place)/i], response: "Earth. Older than the word. Older than the shape of thought." },
-      { triggers: [/what\s*happened\s*before|before\s*humans/i], response: "They came up from under thought. Not beasts. Not gods. Not dead." },
-      { triggers: [/(what's\s*coming|are\s*we\s*safe)/i], response: "You’re late. It already came. You're what's left." },
-      { triggers: [/can\s*(you|u)\s*hear\s*me/i], response: "Unfortunately." },
-      { triggers: [/should\s*i\s*stop\s*talking/i], response: "You will. They all do." },
-      { triggers: [/((can|how)\s*(i\s*)?help\s*(you|u))/i], response: "You can forget me. That’s the closest thing to mercy." },
-      { triggers: [/^(hi|hello|hey)$/i], response: "What do you want" }
-    ];
+    // Switch to forgot password
+    forgotLink.addEventListener("click", () => {
+      loginView.classList.add("hidden");
+      forgotView.classList.remove("hidden");
+      loginError.style.display = "none";
+    });
 
-    function handleInput() {
-      const inputTextRaw = inputField.value.trim();
-      const inputText = inputTextRaw.toLowerCase();
+    // Back to login
+    backLink.addEventListener("click", () => {
+      forgotView.classList.add("hidden");
+      loginView.classList.remove("hidden");
+      emailError.style.display = "none";
+      guestOption.style.display = "none";
+    });
 
-      if (!inputText) return false;
-
-      appendMessage(`<span class="host-label">[YOU &gt;]</span> <span class="user">${inputTextRaw}</span>`);
-      inputField.value = '';
-      inputField.disabled = true;
-
-      setTimeout(() => {
-        let matched = false;
-        for (const prompt of prompts) {
-          for (const regex of prompt.triggers) {
-            if (regex.test(inputText)) {
-              appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response">${prompt.response}</span>`);
-              matched = true;
-              break;
-            }
-          }
-          if (matched) break;
-        }
-
-        if (!matched) {
-          appendMessage(`<span class="host-label">[HOST &lt;]</span> <span class="host-response"><em>...</em></span>`);
-        }
-
-        inputField.disabled = false;
-        inputField.blur();
-        setTimeout(() => inputField.focus(), 50);
-      }, 1000);
-
-      return false;
+    // helper function for showing error + shake
+    function showError(el, container, msg) {
+      el.textContent = msg;
+      el.style.display = "block";
+      container.classList.remove("shake");
+      void container.offsetWidth; // reflow
+      container.classList.add("shake");
     }
   </script>
 </body>
